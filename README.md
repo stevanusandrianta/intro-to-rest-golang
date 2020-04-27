@@ -18,3 +18,5 @@ curl http://localhost:8080/books
 curl http://localhost:8080/books/1
 
 curl -H "Content-Type: application/json" -X POST -d '{"id":5,"title":"Title 5", "author":"Author 5", "year":"2025"}' http://localhost:8080/books
+
+curl -H "Content-Type: application/json" -X PUT -d '{"id":2,"title":"Title 2 Updated", "author":"Author 2 Updated", "year":"2022"}' http://localhost:8080/books

@@ -23,7 +23,7 @@ func main() {
 
 	books = append(books, Book{ID: 1, Title: "Book 1", Author: "Author 1", Year: "2021"},
 		Book{ID: 2, Title: "Book 2", Author: "Author 2", Year: "2022"},
-		Book{ID: 3, Title: "Book 3", Author: "Author 2", Year: "2023"})
+		Book{ID: 3, Title: "Book 3", Author: "Author 3", Year: "2023"})
 
 	router.HandleFunc("/books", getBooks).Methods("GET")
 	router.HandleFunc("/books/{id}", getBook).Methods("GET")
@@ -60,7 +60,16 @@ func addBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBook(w http.ResponseWriter, r *http.Request) {
-	log.Println("update book")
+	var book Book
+	_ = json.NewDecoder(r.Body).Decode(&book)
+
+	for i, item := range books {
+		if item.ID == book.ID {
+			books[i] = book
+		}
+	}
+
+	json.NewEncoder(w).Encode((books))
 }
 
 func removeBook(w http.ResponseWriter, r *http.Request) {
