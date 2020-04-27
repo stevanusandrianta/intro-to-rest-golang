@@ -1,12 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
+	"github.com/subosito/gotenv"
 )
 
 type Book struct {
@@ -18,12 +22,27 @@ type Book struct {
 
 var books []Book
 
-func main() {
-	router := mux.NewRouter()
+func init() {
+	gotenv.Load()
+}
 
-	books = append(books, Book{ID: 1, Title: "Book 1", Author: "Author 1", Year: "2021"},
-		Book{ID: 2, Title: "Book 2", Author: "Author 2", Year: "2022"},
-		Book{ID: 3, Title: "Book 3", Author: "Author 3", Year: "2023"})
+func logFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func main() {
+	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
+	logFatal(err)
+
+	db, err := sql.Open("postgres", pgUrl)
+	logFatal(err)
+
+	err = db.Ping()
+	logFatal(err)
+
+	router := mux.NewRouter()
 
 	router.HandleFunc("/books", getBooks).Methods("GET")
 	router.HandleFunc("/books/{id}", getBook).Methods("GET")
